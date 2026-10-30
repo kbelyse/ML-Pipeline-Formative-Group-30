@@ -1,0 +1,31 @@
+erDiagram
+    countries ||--o{ invoices : "placed from"
+    customers ||--o{ invoices : places
+    invoices ||--|{ invoice_lines : contains
+    products ||--o{ invoice_lines : "sold in"
+
+    countries {
+        INT country_id PK
+        VARCHAR name UK
+    }
+    customers {
+        VARCHAR customer_id PK "UNKNOWN when missing"
+    }
+    products {
+        VARCHAR stock_code PK
+        VARCHAR description
+    }
+    invoices {
+        VARCHAR invoice_no PK "starts with C if cancelled"
+        DATETIME invoice_date "indexed"
+        VARCHAR customer_id FK
+        INT country_id FK
+        BOOL is_cancelled
+    }
+    invoice_lines {
+        INT line_id PK
+        VARCHAR invoice_no FK
+        VARCHAR stock_code FK
+        INT quantity
+        DECIMAL unit_price
+    }
