@@ -1,0 +1,56 @@
+[
+  {
+    "invoice_no": "536365",
+    "invoice_date": {
+      "$date": "2010-12-01T08:26:00Z"
+    },
+    "is_cancelled": false,
+    "customer": {
+      "customer_id": "17850",
+      "country": "United Kingdom"
+    },
+    "product": {
+      "stock_code": "85123A",
+      "description": "WHITE HANGING HEART T-LIGHT HOLDER"
+    },
+    "quantity": 6,
+    "unit_price": 2.55,
+    "revenue": 15.3
+  },
+  {
+    "invoice_no": "C541433",
+    "invoice_date": {
+      "$date": "2011-01-18T10:17:00Z"
+    },
+    "is_cancelled": true,
+    "customer": {
+      "customer_id": "12346",
+      "country": "United Kingdom"
+    },
+    "product": {
+      "stock_code": "23166",
+      "description": "MEDIUM CERAMIC TOP STORAGE JAR"
+    },
+    "quantity": -74215,
+    "unit_price": 1.04,
+    "revenue": -77183.6
+  },
+  {
+    "invoice_no": "536544",
+    "invoice_date": {
+      "$date": "2010-12-01T14:32:00Z"
+    },
+    "is_cancelled": false,
+    "customer": {
+      "customer_id": "UNKNOWN",
+      "country": "United Kingdom"
+    },
+    "product": {
+      "stock_code": "21773",
+      "description": "DECORATIVE ROSE BATHROOM BOTTLE"
+    },
+    "quantity": 1,
+    "unit_price": 2.51,
+    "revenue": 2.51
+  }
+]
