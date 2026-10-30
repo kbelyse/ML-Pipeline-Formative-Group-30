@@ -1,0 +1,6 @@
+  {
+    "features": ["lag_1", "lag_2", "lag_6", "lag_12", "roll_mean_6", "roll_mean_24",
+                 "roll_std_6", "invoices_lag_1", "basket_lag_1", "dow", "days_since_last"],
+    "target": "net_revenue",
+    "model": "LinearRegression"
+  }
