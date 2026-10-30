@@ -3,3 +3,5 @@ __pycache__/
 .venv/
 .env
 models/placeholder_model.joblib
+.DS_Store
+data/raw/

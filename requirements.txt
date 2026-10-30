@@ -6,3 +6,13 @@ statsmodels
 scikit-learn
 joblib
 ucimlrepo
+fastapi
+uvicorn[standard]
+sqlalchemy>=2.0
+pymysql
+cryptography
+pymongo
+pydantic>=2
+python-dotenv
+pytest
+httpx
