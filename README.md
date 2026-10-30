@@ -23,6 +23,10 @@ api/                  Task 3: FastAPI app (CRUD and time-series endpoints)
   routers/            /sql and /mongo endpoints
 scripts/
   load_data.py        builds the schema and loads the cleaned data into MySQL and MongoDB
+  predict.py          Task 4: fetches daily data from the API and forecasts the next trading day
+  make_placeholder_model.py  stand-in model for testing predict.py without the Task 1 model
+src/preprocessing.py  Task 1: cleaning, daily aggregation and feature code (reused by Task 4)
+models/               Task 1: trained model (best_model.pkl) and its feature list
 tests/                API tests for both databases
 data/processed/       cleaned dataset from Task 1
 docker-compose.yml    local MySQL and MongoDB
@@ -159,6 +163,56 @@ The tests run every endpoint against both databases, using separate `retail_test
 
 The `/daily` endpoint returns the same values as `aggregate_daily` in the Task 1 notebook, for example on 2010-12-01: gross revenue 57,442.33, 127 invoices, 26,808 units, from both MySQL and MongoDB.
 
+## Task 4: Prediction script
+
+`scripts/predict.py` forecasts net revenue for the next trading day. It runs the full pipeline in four steps:
+
+1. **Fetch:** calls the API for the latest record (`/{db}/transactions/latest`) and then for the last 60 days of daily data (`/{db}/daily`).
+2. **Preprocess:** builds the 11 model features with `make_features` from `src/preprocessing.py`, the same code used to train the model in Task 1 (lags, rolling means, invoice and basket lags, weekday, days since last trading day).
+3. **Load:** reads the trained Linear Regression pipeline from `models/best_model.pkl`.
+4. **Predict:** prints the forecast for the next trading day.
+
+### Run it
+
+The API must be running (see Setup above), then:
+
+```bash
+python scripts/predict.py                # reads through the MySQL endpoints
+python scripts/predict.py --db mongo     # reads through the MongoDB endpoints
+python scripts/predict.py --source csv   # offline test, skips the API
+```
+
+Options: `--days` (calendar days of history, default 60), `--api-url`, `--model` (path to a model file).
+
+Example output:
+
+```
+1. Fetching last 60 days (api, mongo)...
+   got 51 trading days: 2011-10-11 to 2011-12-08
+2. Loading model...
+3. Preprocessing and predicting...
+
+Forecast net revenue for 2011-12-09: GBP 57,637.72
+```
+
+Both databases return the same forecast.
+
+### Design notes
+
+- **Unfinished last day:** the data ends at midday on 2011-12-09. As in Task 1, a final day whose last invoice is before 17:00 is dropped, so the model never sees a partial day. The forecast is therefore for 2011-12-09.
+- **Trading days:** the shop never trades on Saturdays, so the next trading day skips Saturdays. UK bank holidays are not known to the script.
+- **Minimum history:** at least 25 trading days are needed (the 24-day rolling mean plus the day to predict).
+- **Error handling:** the script exits with a clear message if the API is unreachable, returns no data or lacks an expected field, if the model file cannot be loaded, or if there is too little history.
+- **scikit-learn version:** the model was trained with scikit-learn 1.6.1 and may not load with other versions. Install it with `pip install "scikit-learn==1.6.1"`.
+
+### Tests
+
+```bash
+pytest tests/test_predict.py
+```
+
+The tests use a fake API, so no server is needed. They check that the unfinished day is dropped, the basket value is computed correctly, the forecast targets the next trading day, the features use only earlier days, and bad input gives a clear error.
+
 ## Team contributions
 
 | Member | Task | Main components |
@@ -166,4 +220,4 @@ The `/daily` endpoint returns the same values as `aggregate_daily` in the Task 1
 |  | Task 1: Preprocessing, EDA and model | |
 | kbelyse | Task 2: SQL and MongoDB design | ERD, MySQL schema and view, MongoDB collection and validator, sample documents, queries and results |
 | kbelyse | Task 3: API endpoints | FastAPI app, CRUD and time-series endpoints for MySQL and MongoDB, data loader, tests |
-|  | Task 4: Prediction script | |
+| Fadhili-code | Task 4: Prediction script | `scripts/predict.py` (fetch from API, preprocess with the Task 1 features, load model, forecast), error handling, tests, test model |
