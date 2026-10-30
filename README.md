@@ -25,6 +25,7 @@ scripts/
   load_data.py        builds the schema and loads the cleaned data into MySQL and MongoDB
   predict.py          Task 4: fetches daily data from the API and forecasts the next trading day
   make_placeholder_model.py  stand-in model for testing predict.py without the Task 1 model
+notebooks/            Task 1: EDA, analytical questions and model experiments
 src/preprocessing.py  Task 1: cleaning, daily aggregation and feature code (reused by Task 4)
 models/               Task 1: trained model (best_model.pkl) and its feature list
 tests/                API tests for both databases
@@ -51,6 +52,18 @@ uvicorn api.main:app --reload
 ```
 
 Interactive API docs: http://127.0.0.1:8000/docs
+
+## Task 1: Preprocessing, EDA and model
+
+The notebook [`notebooks/time_series_eda_and_model.ipynb`](notebooks/time_series_eda_and_model.ipynb) covers:
+
+- Understanding the data: time range (1 Dec 2010 to 9 Dec 2011), daily granularity, missing values (CustomerID kept as `UNKNOWN`, missing descriptions removed with zero prices, closed days not filled) and distributions.
+- Cleaning: duplicates, non-product codes and invalid prices removed; cancellations kept so the target is net revenue.
+- Six analytical questions with charts, including moving averages (Q1) and lagged values (Q2).
+- Features: lags of 1, 2, 6 and 12 trading days, rolling means and standard deviation, lagged invoices and basket value, weekday.
+- Experiments: naive baselines, Linear Regression, Ridge and Random Forest, tuned with `TimeSeriesSplit`. Linear Regression was best (MAE about £11,073 on the last 56 days) and is saved in `models/best_model.pkl`.
+
+It runs in Google Colab or locally with `requirements.txt`.
 
 ## Task 2: Database design
 
